@@ -35,6 +35,8 @@ private:
 
 	state_t estimated_state;
 
+	DifferentialDriver* driver;
+
 	GoToAngle* goToAngle;
 };
 
