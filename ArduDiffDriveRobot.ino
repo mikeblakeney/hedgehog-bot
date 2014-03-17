@@ -29,7 +29,7 @@ void setup() {
 		99.25mm base length
 	*/
 	DifferentialDriver *driver = new DifferentialDriver(0.0325, 0.09925);
-	Robot* rob = new Robot(driver);
+	Robot* rob = new Robot();
 
 	Motor *leftMotor =  new Motor(L_MOTOR_PWM, L_MOTOR_DIR);
 	Motor *rightMotor = new Motor(R_MOTOR_PWM, R_MOTOR_DIR);

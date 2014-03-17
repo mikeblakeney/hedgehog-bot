@@ -3,10 +3,9 @@
 #include "Robot.h"
 
 
-Robot::Robot(DifferentialDriver *diff)
+Robot::Robot()
 {
 	//imu = new IMUSensor();
-	driver = diff;
 }
 
 void Robot::setMotors(Motor* left, Motor* right)

@@ -12,7 +12,7 @@
 class Robot 
 {
 public:
-	Robot(DifferentialDriver *diff);
+	Robot();
 
 	float getWheelRadius();
 	float getWheelBaseLength();
@@ -40,7 +40,7 @@ private:
 
 	DiskEncoder* encoders[2];
 
-	DifferentialDriver* driver;
+	
 
 	float position[2];
 	float velocity[2];

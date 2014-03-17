@@ -22,7 +22,7 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 void ADDRSupervisor::updateBehavior()
 {
 	float w = goToAngle->execute(estimated_state,PI/2);
-	//diff_velocity vel = robot->
+	//diff_velocity vel = 
 }
 
 
