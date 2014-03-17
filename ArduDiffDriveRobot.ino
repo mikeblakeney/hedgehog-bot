@@ -68,7 +68,7 @@ void setup() {
 
 void loop() {
 	
-	addrSupervisor.updateOdometry();
+	addrSupervisor.updateBehavior();
 
 	delay(200);
 }

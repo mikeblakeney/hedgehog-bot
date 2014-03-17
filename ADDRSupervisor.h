@@ -1,13 +1,9 @@
 #ifndef ADDR_SUPERVISOR
 #define ADDR_SUPERVISOR
 
+#include "ADDRTypes.h"
 #include "Robot.h"
-
-struct state_t {
-	float x;
-	float y;
-	float theta;
-};
+#include "GoToAngle.h"
 
 class ADDRSupervisor
 {
@@ -15,18 +11,17 @@ public:
 	ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_unsafe, 
 					  float init_x, float init_y, float init_theta);
 	
-	void process_MPU();
-	bool imuPacketsAvailable();
-	
 	void setRobot(Robot* rob);
 
 	void incrementleftEncoderCount();
 	void incrementRightEncoderCount();
 
-	void updateOdometry();
+	
+	void updateBehavior();
 
 private:
 	
+	void updateOdometry();
 	
 	Robot* robot;
 	int prev_ticks_right;
@@ -39,6 +34,8 @@ private:
 	float d_unsafe;
 
 	state_t estimated_state;
+
+	GoToAngle* goToAngle;
 };
 
 #endif

@@ -1,7 +1,6 @@
 #ifndef GOTOANGLE_H
 #define GOTOANGLE_H
-#include "ADDRSupervisor.h"
-
+#include "ADDRTypes.h"
 
 class GoToAngle
 {

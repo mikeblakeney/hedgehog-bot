@@ -13,18 +13,6 @@ void Robot::setMotors(Motor* left, Motor* right)
 {
 	motors[0] = left;
 	motors[1] = right;
-
-
-}
-
-Motor* Robot::getLeftMotor()
-{
-	return motors[0];
-}
-
-Motor* Robot::getRightMotor()
-{
-	return motors[1];
 }
 
 void Robot::setDistanceSensors(UltraSonicSensor* sensors)

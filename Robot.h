@@ -21,8 +21,7 @@ public:
 	UltraSonicSensor getSonicSensor(int sensor);
 
 	void setMotors(Motor* left, Motor* right);
-	Motor* getRightMotor();
-	Motor* getLeftMotor();
+
 
 	void setDiskEncoders(DiskEncoder* left, DiskEncoder* right);
 	void incrementleftEncoderCount();

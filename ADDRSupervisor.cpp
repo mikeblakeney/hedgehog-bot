@@ -14,8 +14,16 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 	this->estimated_state.y = init_y;
 	this->estimated_state.theta = init_theta;
 
+	goToAngle = new GoToAngle();
+
 }
 
+
+void ADDRSupervisor::updateBehavior()
+{
+	float w = goToAngle->execute(estimated_state,PI/2);
+	//diff_velocity vel = robot->
+}
 
 
 void ADDRSupervisor::updateOdometry()
@@ -51,14 +59,14 @@ void ADDRSupervisor::updateOdometry()
 	prev_ticks_left = left_ticks;
 	prev_ticks_right = right_ticks;
 
-/*
+
 	Serial.print(estimated_state.x);
 	Serial.print("\t\t");
 	Serial.print(estimated_state.y);
 	Serial.print("\t\t");
 	Serial.println(estimated_state.theta * 180/PI);
 
-*/
+
 }
 
 

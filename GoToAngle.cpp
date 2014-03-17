@@ -1,5 +1,6 @@
 #include "GoToAngle.h"
 
+#include "math.h"
 
 GoToAngle::GoToAngle()
 {
