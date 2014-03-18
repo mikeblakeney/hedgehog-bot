@@ -1,11 +1,38 @@
 #include "ADDRSupervisor.h"
 
+ADDRSupervisor::ADDRSupervisor()
+{
+	this->v = 0.15;
+
+	this->estimated_state.x = 0;
+	this->estimated_state.y = 0;
+	this->estimated_state.theta = 0;
+
+	this->goal.x = 1;
+	this->goal.y = 0;
+	this->goal.theta = 0;
+
+
+	this->d_stop = 0.05;
+	
+	this->d_at_obs = 0.10;
+	this->d_unsafe = 0.05;
+	
+;
+
+	
+
+	goToGoal = new GoToGoal();
+
+}
+
 ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_unsafe, 
 									 float init_x, float init_y, float init_theta,
 									 float g_x, float g_y, float g_theta
 									 )
 {
 	this->v = v;
+	this->w = 0;
 
 	this->goal.x = g_x;
 	this->goal.y = g_y;
@@ -23,7 +50,7 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 
 	
 
-	goToAngle = new GoToAngle();
+	goToGoal = new GoToGoal();
 
 }
 
@@ -31,17 +58,45 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 
 void ADDRSupervisor::updateBehavior()
 {
-	float w = goToAngle->execute(estimated_state, goal.theta);
 	
-	Serial.print("GoToAngle: ");
-	Serial.println(w);
+	if(atGoal())
+	{
+		stop();
+		Serial.println("GOAL!");
+
+	}else{
+		goToGoal->execute(estimated_state, goal, w);
+		
+		uni_velocity vel;
+		vel.v = v;
+		vel.w = w;
+		robot->setVelocity(vel);
+
+		this->updateOdometry();
+	}
+
+
+}
+
+bool ADDRSupervisor::atGoal()
+{
+	float dist_to_goal = sqrt(pow(estimated_state.x - goal.x, 2) + pow(estimated_state.y - goal.y, 2));
+	
+	Serial.print("Distance to goal: ");
+	Serial.println(dist_to_goal);
+
+	if(dist_to_goal < d_stop )
+		return true;
+	else
+		return false;
+}
+
+void ADDRSupervisor::stop()
+{
 	uni_velocity vel;
-	vel.v = v;
-	vel.w = w;
+	vel.v = 0;
+	vel.w = 0;
 	robot->setVelocity(vel);
-
-	this->updateOdometry();
-
 }
 
 void ADDRSupervisor::updateOdometry()
@@ -71,7 +126,7 @@ void ADDRSupervisor::updateOdometry()
 
 	estimated_state.x = x_new;
 	estimated_state.y = y_new;
-	estimated_state.theta = atan2(sin(theta_new) , cos(theta_new) );
+	estimated_state.theta = atan2(sin(theta_new), cos(theta_new));
 
 
 	prev_ticks_left = left_ticks;

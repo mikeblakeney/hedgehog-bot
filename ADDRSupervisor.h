@@ -3,11 +3,12 @@
 
 #include "ADDRTypes.h"
 #include "Robot.h"
-#include "GoToAngle.h"
+#include "GoToGoal.h"
 
 class ADDRSupervisor
 {
 public:
+	ADDRSupervisor();
 	ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_unsafe, 
 					  float init_x, float init_y, float init_theta,
 					  float g_x, float g_y, float g_theta);
@@ -24,12 +25,18 @@ public:
 private:
 	
 	void updateOdometry();
-	
+	bool atGoal();
+	void stop();
+
+
+
+
 	Robot* robot;
 	int prev_ticks_right;
 	int prev_ticks_left;
 
 	float v;
+	float w;
 
 	float d_stop;
 	float d_at_obs;
@@ -40,7 +47,9 @@ private:
 	state_t estimated_state;
 
 
-	GoToAngle* goToAngle;
+	GoToGoal* goToGoal;
+
+
 };
 
 #endif

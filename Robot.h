@@ -52,6 +52,8 @@ private:
 
 	float velocityToRPM(float vel);
 	diff_velocity velocityToPWM(diff_velocity vel);
+	diff_velocity ensure_w(uni_velocity vel);
+
 
 };
 

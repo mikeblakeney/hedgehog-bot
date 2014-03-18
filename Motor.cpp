@@ -22,14 +22,14 @@ Motor::Motor(int pwm, int dir)
 
 void Motor::setSpeed(int speed)
 {
-	if(speed < 0)
+	if(speed > 0)
 	{
 		setDirection(FORWARD);
-		analogWrite(pwm_pin, -1 * beta * speed);
+		analogWrite(pwm_pin, beta * speed);
 	}else
 	{
 		setDirection(BACKWARD);
-		analogWrite(pwm_pin, beta * speed);
+		analogWrite(pwm_pin, -1 * beta * speed);
 	}
 	
 }

@@ -8,7 +8,7 @@
 #include "Robot.h"
 #include "ADDRSupervisor.h"
 
-ADDRSupervisor addrSupervisor(0.15, 0.05, 0.10, 0.05, 0,0,0, 0,0,PI/2);
+ADDRSupervisor addrSupervisor = ADDRSupervisor();
 
 void incrementLeftEncoderCountInterrupt()
 {
@@ -33,7 +33,7 @@ void setup() {
 
 	Motor *leftMotor =  new Motor(L_MOTOR_PWM, L_MOTOR_DIR);
 	Motor *rightMotor = new Motor(R_MOTOR_PWM, R_MOTOR_DIR);
-	rightMotor->setBeta( 0.90 );
+	//rightMotor->setBeta( 0.90 );
 
 	rob->setMotors(leftMotor, rightMotor);
 	
@@ -66,9 +66,9 @@ void setup() {
 }
 
 void loop() {
-	
-	addrSupervisor.updateBehavior();
 
-	delay(200);
+	addrSupervisor.updateBehavior();
+	
+	delay(100);
 }
 

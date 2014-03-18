@@ -1,4 +1,5 @@
 #include "DifferentialDriver.h"
+#include <arduino.h>
 
 DifferentialDriver::DifferentialDriver(float R, float L)
 {
@@ -15,7 +16,7 @@ diff_velocity DifferentialDriver::uniToDiff(float v, float w)
 
 	vel.right = (2 * v + w * L)/(2 * R);
 	vel.left  = (2 * v - w * L)/(2 * R);
-
+	
 	return vel;
 }
 

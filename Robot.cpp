@@ -25,18 +25,22 @@ void Robot::setDifferentialDriver(DifferentialDriver* driver)
 	this->driver = driver;
 }
 
+
 diff_velocity Robot::velocityToPWM(diff_velocity vel)
-{
+{	
+	vel.right = vel.right / (max_vel - min_vel) * 255;
+	vel.left  = vel.left  / (max_vel - min_vel) * 255;
 	
-	vel.right = map(vel.right, min_vel, max_vel, 0, 255);
-	vel.left =  map(vel.left , min_vel, max_vel, 0, 255);
 	return vel;
 }
 
 void Robot::setVelocity(uni_velocity vel)
 {	
-	diff_velocity diff_vel;
+	
+	diff_velocity diff_vel = driver->uniToDiff(vel.v, vel.w);
 
+
+	diff_vel = velocityToPWM(diff_vel);
 	motors[0]->setSpeed(diff_vel.right);
 	motors[1]->setSpeed(diff_vel.left);
 }
@@ -93,4 +97,53 @@ float Robot::getWheelRadius()
 float Robot::getWheelBaseLength()
 {
 	driver->getWheelBaseLength();
+}
+
+
+diff_velocity Robot::ensure_w(uni_velocity vel)
+{
+	diff_velocity diff_vel;
+
+	float R = driver->getWheelRadius();
+	float L = driver->getWheelBaseLength();
+
+/*
+
+	if(abs(vel.v) > 0)
+	{
+		float v_lim  = fmax(fmin(abs(vel.v), R/2 * 2 * max_vel), R/2 * 2 * min_vel);
+		float w_lim  = fmax(fmin(abs(vel.w), R/L * (max_vel - min_vel)), 0);
+
+		diff_velocity vel_d = driver->uniToDiff(v_lim, w_lim);
+
+		float vel_rl_max = fmax(vel_d.right, vel_d.left);
+		float vel_rl_min = fmin(vel_d.right, vel_d.left);
+
+		if(vel_rl_max > max_vel)
+		{
+			diff_vel.right = vel_d.right - (vel_rl_max - max_vel);
+			diff_vel.left  = vel_d.left  - (vel_rl_max - max_vel);
+		}else if(vel_rl_min < min_vel)
+		{
+			diff_vel.right = vel_d.right + (vel_rl_min - min_vel);
+			diff_vel.left  = vel_d.left  + (vel_rl_min - min_vel);
+		}else
+		{
+			diff_vel.right = vel_d.right;
+			diff_vel.left  = vel_d.left;
+		}
+	}else
+	{
+		diff_vel.right = 0;
+		diff_vel.left  = 0;
+	}
+
+*/
+
+	diff_velocity vel_d = driver->uniToDiff(vel.v , vel.w );
+
+
+
+
+	return diff_vel;
 }
