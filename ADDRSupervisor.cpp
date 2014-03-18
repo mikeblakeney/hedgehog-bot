@@ -8,8 +8,8 @@ ADDRSupervisor::ADDRSupervisor()
 	this->estimated_state.y = 0;
 	this->estimated_state.theta = 0;
 
-	this->goal.x = 1;
-	this->goal.y = 0;
+	this->goal.x = 0.5;
+	this->goal.y = 0.0;
 	this->goal.theta = 0;
 
 
@@ -17,11 +17,10 @@ ADDRSupervisor::ADDRSupervisor()
 	
 	this->d_at_obs = 0.10;
 	this->d_unsafe = 0.05;
-	
-;
 
+	prev_ticks_right = 0;
+	prev_ticks_left = 0;
 	
-
 	goToGoal = new GoToGoal();
 
 }
@@ -48,7 +47,8 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 	this->estimated_state.y = init_y;
 	this->estimated_state.theta = init_theta;
 
-	
+	prev_ticks_right = 0;
+	prev_ticks_left = 0;
 
 	goToGoal = new GoToGoal();
 
@@ -126,7 +126,7 @@ void ADDRSupervisor::updateOdometry()
 
 	estimated_state.x = x_new;
 	estimated_state.y = y_new;
-	estimated_state.theta = atan2(sin(theta_new), cos(theta_new));
+	estimated_state.theta = theta_new;
 
 
 	prev_ticks_left = left_ticks;

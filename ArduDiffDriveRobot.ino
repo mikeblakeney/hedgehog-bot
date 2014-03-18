@@ -23,7 +23,7 @@ void incrementRightEncoderCountInterrupt()
 void setup() {
 	
 
-	Serial.begin(115200);
+	Serial.begin(9600);
 	/*
 		65mm diameter
 		99.25mm base length

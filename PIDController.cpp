@@ -9,6 +9,9 @@ PIDController::PIDController()
 	Ki = 0;
 	Kd = 0;
 
+	errSum = 0;
+	prevErr = 0;
+
 	dt = 1000;
 }
 
