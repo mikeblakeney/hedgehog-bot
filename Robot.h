@@ -12,7 +12,7 @@
 class Robot 
 {
 public:
-	Robot();
+	Robot(float max_rpm, float min_rpm );
 
 	float getWheelRadius();
 	float getWheelBaseLength();
@@ -21,7 +21,8 @@ public:
 	UltraSonicSensor getSonicSensor(int sensor);
 
 	void setMotors(Motor* left, Motor* right);
-
+	void setVelocity(uni_velocity vel);
+	void setDifferentialDriver(DifferentialDriver* driver);
 
 	void setDiskEncoders(DiskEncoder* left, DiskEncoder* right);
 	void incrementleftEncoderCount();
@@ -30,13 +31,10 @@ public:
 	int getRightEncoderCount();
 	int getTicksPerRev();
 
-	void initialize();
-
-
-
 private:
 	UltraSonicSensor distance[5];
 	Motor* motors[2];
+	DifferentialDriver* driver;
 
 	DiskEncoder* encoders[2];
 
@@ -48,9 +46,12 @@ private:
 	float phi;
 	float omega[2];
 
+	float max_vel;
+	float min_vel;
 
 
-
+	float velocityToRPM(float vel);
+	diff_velocity velocityToPWM(diff_velocity vel);
 
 };
 

@@ -9,9 +9,11 @@ class ADDRSupervisor
 {
 public:
 	ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_unsafe, 
-					  float init_x, float init_y, float init_theta);
+					  float init_x, float init_y, float init_theta,
+					  float g_x, float g_y, float g_theta);
 	
 	void setRobot(Robot* rob);
+	void setDifferentialDriver(DifferentialDriver* driver);
 
 	void incrementleftEncoderCount();
 	void incrementRightEncoderCount();
@@ -33,9 +35,10 @@ private:
 	float d_at_obs;
 	float d_unsafe;
 
+	state_t goal;
+
 	state_t estimated_state;
 
-	DifferentialDriver* driver;
 
 	GoToAngle* goToAngle;
 };

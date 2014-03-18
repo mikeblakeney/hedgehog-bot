@@ -1,9 +1,16 @@
 #include "ADDRSupervisor.h"
 
 ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_unsafe, 
-									 float init_x, float init_y, float init_theta)
+									 float init_x, float init_y, float init_theta,
+									 float g_x, float g_y, float g_theta
+									 )
 {
 	this->v = v;
+
+	this->goal.x = g_x;
+	this->goal.y = g_y;
+	this->goal.theta = g_theta;
+
 
 	this->d_stop = d_stop;
 	
@@ -14,17 +21,28 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 	this->estimated_state.y = init_y;
 	this->estimated_state.theta = init_theta;
 
+	
+
 	goToAngle = new GoToAngle();
 
 }
 
 
+
 void ADDRSupervisor::updateBehavior()
 {
-	float w = goToAngle->execute(estimated_state,PI/2);
-	//diff_velocity vel = 
-}
+	float w = goToAngle->execute(estimated_state, goal.theta);
+	
+	Serial.print("GoToAngle: ");
+	Serial.println(w);
+	uni_velocity vel;
+	vel.v = v;
+	vel.w = w;
+	robot->setVelocity(vel);
 
+	this->updateOdometry();
+
+}
 
 void ADDRSupervisor::updateOdometry()
 {

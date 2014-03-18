@@ -1,6 +1,8 @@
 #ifndef MOTOR_H
 #define MOTOR_H 
 
+#include "ADDRTypes.h"
+
 class Motor
 {
 public:
@@ -8,8 +10,7 @@ public:
 	Motor(int pwm, int dir);
 
 	void setSpeed(int speed);
-	
-	void setDirection(int forward);
+	void setDirection(wheel_direction dir);
 	void goForward();
 	void goBackward();
 
@@ -22,6 +23,9 @@ private:
 	int dir_pin;
 
 	float beta;
+
+	float max_speed;
+	float min_speed;
 };
 
 #endif

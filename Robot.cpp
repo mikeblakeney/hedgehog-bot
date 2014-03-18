@@ -3,15 +3,42 @@
 #include "Robot.h"
 
 
-Robot::Robot()
+Robot::Robot(float max_rpm, float min_rpm )
 {
-	//imu = new IMUSensor();
+	max_vel = this->velocityToRPM(max_rpm);
+	min_vel = this->velocityToRPM(min_rpm);
 }
 
 void Robot::setMotors(Motor* left, Motor* right)
 {
 	motors[0] = left;
 	motors[1] = right;
+}
+
+float Robot::velocityToRPM(float vel)
+{
+	return vel*2*PI/60;
+}
+
+void Robot::setDifferentialDriver(DifferentialDriver* driver)
+{
+	this->driver = driver;
+}
+
+diff_velocity Robot::velocityToPWM(diff_velocity vel)
+{
+	
+	vel.right = map(vel.right, min_vel, max_vel, 0, 255);
+	vel.left =  map(vel.left , min_vel, max_vel, 0, 255);
+	return vel;
+}
+
+void Robot::setVelocity(uni_velocity vel)
+{	
+	diff_velocity diff_vel;
+
+	motors[0]->setSpeed(diff_vel.right);
+	motors[1]->setSpeed(diff_vel.left);
 }
 
 void Robot::setDistanceSensors(UltraSonicSensor* sensors)
@@ -53,55 +80,17 @@ int Robot::getRightEncoderCount()
 	return encoders[1]->getEncoderCount();
 }
 
-float Robot::getWheelRadius()
-{
-	return driver->getWheelRadius();
-}
-
-float Robot::getWheelBaseLength()
-{
-	return driver->getWheelBaseLength();
-}
-
 int Robot::getTicksPerRev()
 {
 	return encoders[0]->getTicksPerRev();
 }
 
-void Robot::initialize()
+float Robot::getWheelRadius()
 {
-	
-	//	imu->initialize();
+	driver->getWheelRadius();
 }
 
-/*
-void Robot::calibrateIMU()
+float Robot::getWheelBaseLength()
 {
-	imu->calibrate();
+	driver->getWheelBaseLength();
 }
-
-imu_int_status_t Robot::getMPUIntStatus()
-{
-	return imu->getIntStatus();
-}
-
-bool Robot::imuPacketsAvailable()
-{
-	return imu->packetsAvailable();
-}
-
-VectorInt16 Robot::getAcceleration()
-{
-	return imu->getAcceleration();
-}
-
-ypr_t Robot::getOrientation()
-{
-	return imu->getOrientation();
-}
-
-bool Robot::testIMUConnection()
-{
-	return imu->testConnection();
-}
-*/

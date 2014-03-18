@@ -8,7 +8,7 @@
 #include "Robot.h"
 #include "ADDRSupervisor.h"
 
-ADDRSupervisor addrSupervisor(0.15, 0.05, 0.10, 0.05, 0,0,0);
+ADDRSupervisor addrSupervisor(0.15, 0.05, 0.10, 0.05, 0,0,0, 0,0,PI/2);
 
 void incrementLeftEncoderCountInterrupt()
 {
@@ -29,7 +29,7 @@ void setup() {
 		99.25mm base length
 	*/
 	DifferentialDriver *driver = new DifferentialDriver(0.0325, 0.09925);
-	Robot* rob = new Robot();
+	Robot* rob = new Robot(130, 30);
 
 	Motor *leftMotor =  new Motor(L_MOTOR_PWM, L_MOTOR_DIR);
 	Motor *rightMotor = new Motor(R_MOTOR_PWM, R_MOTOR_DIR);
@@ -57,10 +57,9 @@ void setup() {
 
 	rob->setDiskEncoders(leftEncoder, rightEncoder);
 
-	rob->initialize();
-
 	Serial.println("Starting ADDR-1");
-	
+
+	rob->setDifferentialDriver(driver);
 	addrSupervisor.setRobot(rob);
 
 	

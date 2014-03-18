@@ -1,5 +1,6 @@
 #ifndef DIFFERENTIAL_DRIVER
 #define DIFFERENTIAL_DRIVER
+
 #include "ADDRTypes.h"
 
 class DifferentialDriver

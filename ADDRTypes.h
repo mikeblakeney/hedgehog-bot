@@ -19,5 +19,6 @@ struct uni_velocity
 	float w;
 };
 
+enum wheel_direction{FORWARD, BACKWARD};
 
 #endif

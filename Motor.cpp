@@ -1,6 +1,8 @@
 #include "Motor.h"
 #include <arduino.h>
 
+
+
 Motor::Motor()
 {
 	beta = 1;
@@ -12,7 +14,7 @@ Motor::Motor(int pwm, int dir)
 	this->dir_pin = dir;
 
 	pinMode(dir_pin, OUTPUT);
-	setDirection(1);
+	setDirection(FORWARD);
 
 	beta = 1;
 }
@@ -20,16 +22,24 @@ Motor::Motor(int pwm, int dir)
 
 void Motor::setSpeed(int speed)
 {
-	analogWrite(pwm_pin, beta * speed);
+	if(speed < 0)
+	{
+		setDirection(FORWARD);
+		analogWrite(pwm_pin, -1 * beta * speed);
+	}else
+	{
+		setDirection(BACKWARD);
+		analogWrite(pwm_pin, beta * speed);
+	}
+	
 }
 
-
-void Motor::setDirection(int forward)
+void Motor::setDirection(wheel_direction dir)
 {
-	if(forward)
+	if(dir == FORWARD)
 	{
 		digitalWrite(dir_pin, HIGH);
-	}else
+	}else if(dir == BACKWARD)
 	{
 		digitalWrite(dir_pin, LOW);
 	}
@@ -48,12 +58,12 @@ float Motor::getBeta()
 
 void Motor::goForward()
 {
-	setDirection(1);
+	setDirection(FORWARD);
 }
 
 void Motor::goBackward()
 {
-	setDirection(0);
+	setDirection(BACKWARD);
 }
 
 
