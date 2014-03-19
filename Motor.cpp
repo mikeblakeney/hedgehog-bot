@@ -33,15 +33,22 @@ void Motor::setSpeed(int speed)
 	}
 	
 }
+wheel_direction Motor::getDirection()
+{
+	return direction;
+}
 
 void Motor::setDirection(wheel_direction dir)
 {
 	if(dir == FORWARD)
 	{
 		digitalWrite(dir_pin, HIGH);
+		direction = FORWARD;
+
 	}else if(dir == BACKWARD)
 	{
 		digitalWrite(dir_pin, LOW);
+		direction = BACKWARD;
 	}
 }
 

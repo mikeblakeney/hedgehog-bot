@@ -42,8 +42,8 @@ diff_velocity Robot::velocityToPWM(diff_velocity vel)
 	}
 
 
-	vel.right = map(vel.right, min_vel, max_vel, 75, 255);
-	vel.left  = map(vel.left , min_vel, max_vel, 75, 255);
+	vel.right = map(vel.right, min_vel, max_vel, 90, 255);
+	vel.left  = map(vel.left , min_vel, max_vel, 90, 255);
 
 	return vel;
 }
@@ -86,14 +86,35 @@ void Robot::setDiskEncoders(DiskEncoder* left, DiskEncoder* right)
 	encoders[1] = right;
 }
 
-void Robot::incrementleftEncoderCount()
+void Robot::updateLeftEncoderCount()
 {
-	encoders[0]->incrementEncoderCount();
+
+	switch(motors[0]->getDirection())
+	{
+	case FORWARD:
+		encoders[0]->incrementEncoderCount();
+		break;
+	case BACKWARD:
+		encoders[0]->decrementEncoderCount();
+		break;
+	default:
+		break;
+	}
 }
 
-void Robot::incrementRightEncoderCount()
+void Robot::updateRightEncoderCount()
 {
-	encoders[1]->incrementEncoderCount();
+	switch(motors[1]->getDirection())
+	{
+	case FORWARD:
+		encoders[1]->incrementEncoderCount();
+		break;
+	case BACKWARD:
+		encoders[1]->decrementEncoderCount();
+		break;
+	default:
+		break;
+	}
 }
 
 int Robot::getLeftEncoderCount()

@@ -21,6 +21,11 @@ void DiskEncoder::incrementEncoderCount()
 	encoderCount++;
 }
 
+void DiskEncoder::decrementEncoderCount()
+{
+	encoderCount--;
+}
+
 int DiskEncoder::getEncoderPin()
 {
 	return encoderPin;

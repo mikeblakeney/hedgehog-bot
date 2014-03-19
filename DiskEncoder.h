@@ -9,11 +9,12 @@ public:
 	int getEncoderCount();
 	int getEncoderPin();
 	void incrementEncoderCount();
+	void decrementEncoderCount();
 
 	int getTicksPerRev();
 	
 private:
-	int encoderCount;
+	unsigned long encoderCount;
 	int encoderPin;
 
 	int ticks_per_rev;

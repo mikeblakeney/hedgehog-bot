@@ -15,18 +15,21 @@ ADDRSupervisor addrSupervisor = ADDRSupervisor();
 volatile long lastRiseTimeL = 0;
 volatile long lastRiseTimeR = 0;
 
-void incrementLeftEncoderCountInterrupt()
+bool start = false;
+bool goal = false;
+
+void updateLeftEncoderCountInterrupt()
 {
 	if(lastRiseTimeL + ENC_HIGH_DELAY < millis())
-		addrSupervisor.incrementleftEncoderCount();
+		addrSupervisor.updateLeftEncoderCount();
 
 	lastRiseTimeL = millis();
 }
 
-void incrementRightEncoderCountInterrupt()
+void updateRightEncoderCountInterrupt()
 {
 	if(lastRiseTimeR + ENC_HIGH_DELAY < millis())
-		addrSupervisor.incrementRightEncoderCount();
+		addrSupervisor.updateRightEncoderCount();
 
 	lastRiseTimeR = millis();
 }
@@ -63,8 +66,8 @@ void setup() {
 	
 	DiskEncoder* leftEncoder =  new DiskEncoder(L_ENCODER, 16);
 	DiskEncoder* rightEncoder = new DiskEncoder(R_ENCODER, 16);
-	PCintPort::attachInterrupt(L_ENCODER, &incrementLeftEncoderCountInterrupt, RISING);
-	PCintPort::attachInterrupt(R_ENCODER, &incrementRightEncoderCountInterrupt, RISING);
+	PCintPort::attachInterrupt(L_ENCODER, &updateLeftEncoderCountInterrupt, RISING);
+	PCintPort::attachInterrupt(R_ENCODER, &updateRightEncoderCountInterrupt, RISING);
 
 	rob->setDiskEncoders(leftEncoder, rightEncoder);
 
@@ -78,8 +81,19 @@ void setup() {
 
 void loop() {
 
-	addrSupervisor.updateBehavior();
+	while( !start ) 
+	{
+		if(Serial.available() > 0)
+		{
+			char input = Serial.read();
+			if(input == 'g') start = true;
+		}
+	}
 	
+	if(!goal)
+	{
+		goal = addrSupervisor.updateBehavior();
+	}
 	//delay(100);
 }
 

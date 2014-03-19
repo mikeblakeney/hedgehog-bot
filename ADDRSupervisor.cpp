@@ -10,9 +10,9 @@ ADDRSupervisor::ADDRSupervisor()
 	this->estimated_state.y = 0;
 	this->estimated_state.theta = 0;
 
-	this->goal.x = 1.0;
-	this->goal.y = 1.0;
-	this->goal.theta = 0;
+	this->goal.x = -0.75;
+	this->goal.y =  0.00;
+	this->goal.theta = 0.00;
 
 
 	this->d_stop = 0.05;
@@ -58,13 +58,14 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 
 
 
-void ADDRSupervisor::updateBehavior()
+bool ADDRSupervisor::updateBehavior()
 {
 	
 	if(atGoal())
 	{
 		stop();
 		Serial.println("GOAL!");
+		return true;
 
 	}else{
 		goToGoal->execute(estimated_state, goal, cur_w);
@@ -77,7 +78,7 @@ void ADDRSupervisor::updateBehavior()
 		this->updateOdometry();
 	}
 
-
+	return false;
 }
 
 bool ADDRSupervisor::atGoal()
@@ -105,10 +106,8 @@ void ADDRSupervisor::stop()
 
 void ADDRSupervisor::updateOdometry()
 {
-	int right_ticks = robot->getRightEncoderCount();
-	int left_ticks = robot->getLeftEncoderCount();
-
-	//Serial.println(right_ticks);
+	long right_ticks = robot->getRightEncoderCount();
+	long left_ticks = robot->getLeftEncoderCount();
 
 	float R = robot->getWheelRadius();
 	float L = robot->getWheelBaseLength();
@@ -153,12 +152,12 @@ void ADDRSupervisor::setRobot(Robot *rob)
 	robot = rob;
 }
 
-void ADDRSupervisor::incrementleftEncoderCount()
+void ADDRSupervisor::updateLeftEncoderCount()
 {
-	robot->incrementleftEncoderCount();
+	robot->updateLeftEncoderCount();
 }
 
-void ADDRSupervisor::incrementRightEncoderCount()
+void ADDRSupervisor::updateRightEncoderCount()
 {
-	robot->incrementRightEncoderCount();
+	robot->updateRightEncoderCount();
 }

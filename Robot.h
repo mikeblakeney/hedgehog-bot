@@ -25,8 +25,8 @@ public:
 	void setDifferentialDriver(DifferentialDriver* driver);
 
 	void setDiskEncoders(DiskEncoder* left, DiskEncoder* right);
-	void incrementleftEncoderCount();
-	void incrementRightEncoderCount();
+	void updateLeftEncoderCount();
+	void updateRightEncoderCount();
 	int getLeftEncoderCount();
 	int getRightEncoderCount();
 	int getTicksPerRev();

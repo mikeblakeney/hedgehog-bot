@@ -17,6 +17,8 @@ public:
 	void setBeta(float val);
 	float getBeta();
 
+	wheel_direction getDirection();
+
 private:
 	int speed;
 	int pwm_pin;
@@ -26,6 +28,8 @@ private:
 
 	float max_speed;
 	float min_speed;
+
+	wheel_direction direction;
 };
 
 #endif

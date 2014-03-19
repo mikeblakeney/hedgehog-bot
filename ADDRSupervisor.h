@@ -16,11 +16,11 @@ public:
 	void setRobot(Robot* rob);
 	void setDifferentialDriver(DifferentialDriver* driver);
 
-	void incrementleftEncoderCount();
-	void incrementRightEncoderCount();
+	void updateLeftEncoderCount();
+	void updateRightEncoderCount();
 
 	
-	void updateBehavior();
+	bool updateBehavior();
 
 private:
 	
@@ -32,8 +32,8 @@ private:
 
 
 	Robot* robot;
-	int prev_ticks_right;
-	int prev_ticks_left;
+	long prev_ticks_right;
+	long prev_ticks_left;
 
 	float v;
 	float cur_w;

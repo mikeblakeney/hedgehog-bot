@@ -12,7 +12,7 @@ PIDController::PIDController()
 	errSum = 0;
 	prevErr = 0;
 
-	dt = 50;
+	dt = 150;
 }
 
 void PIDController::compute(float state, float goal, float &output)
