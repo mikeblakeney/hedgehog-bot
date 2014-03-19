@@ -28,19 +28,41 @@ void Robot::setDifferentialDriver(DifferentialDriver* driver)
 
 diff_velocity Robot::velocityToPWM(diff_velocity vel)
 {	
-	vel.right = vel.right / (max_vel - min_vel) * 255;
-	vel.left  = vel.left  / (max_vel - min_vel) * 255;
+	float vel_rl_max = fmax(vel.right, vel.left);
+	float vel_rl_min = fmin(vel.right, vel.left);
 	
+	if(vel_rl_max > max_vel)
+	{
+		vel.right = vel.right - (vel_rl_max - max_vel);
+		vel.left  = vel.left - (vel_rl_max - max_vel);
+	}else if(vel_rl_min < min_vel)
+	{
+		vel.right = vel.right + (min_vel - vel_rl_min);
+		vel.left  = vel.left  + (min_vel - vel_rl_min);
+	}
+
+
+	vel.right = map(vel.right, min_vel, max_vel, 75, 255);
+	vel.left  = map(vel.left , min_vel, max_vel, 75, 255);
+
 	return vel;
 }
 
 void Robot::setVelocity(uni_velocity vel)
 {	
-	
 	diff_velocity diff_vel = driver->uniToDiff(vel.v, vel.w);
+	if(abs(vel.v) > 0)
+	{
+		diff_vel = velocityToPWM(diff_vel);
+	}
+	else
+	{
+		diff_vel.right = 0;
+		diff_vel.left = 0;
+	}
 
 
-	diff_vel = velocityToPWM(diff_vel);
+	
 	motors[0]->setSpeed(diff_vel.right);
 	motors[1]->setSpeed(diff_vel.left);
 }

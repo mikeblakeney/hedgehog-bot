@@ -12,14 +12,15 @@ PIDController::PIDController()
 	errSum = 0;
 	prevErr = 0;
 
-	dt = 1000;
+	dt = 50;
 }
 
-float PIDController::compute(float state, float goal, float &output)
+void PIDController::compute(float state, float goal, float &output)
 {
+	
 	int now = millis();
 	
-	if(now - lastTime >= dt)
+	if((now - lastTime) >= dt)
 	{
 		float error = goal - state;
 		error = atan2(sin(error), cos(error));

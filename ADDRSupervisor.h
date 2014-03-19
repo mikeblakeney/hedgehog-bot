@@ -36,7 +36,7 @@ private:
 	int prev_ticks_left;
 
 	float v;
-	float w;
+	float cur_w;
 
 	float d_stop;
 	float d_at_obs;

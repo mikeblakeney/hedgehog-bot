@@ -1,5 +1,5 @@
 #include "GoToGoal.h"
-
+#include <math.h>
 
 GoToGoal::GoToGoal()
 {
@@ -9,5 +9,9 @@ GoToGoal::GoToGoal()
 
 void GoToGoal::execute(state_t est, state_t goal, float &w)
 {
-	pid->compute(est.theta, goal.theta, w);
+	float u_x = goal.x - est.x;
+	float u_y = goal.y - est.y;
+	float theta_g = atan2(u_y, u_x);
+	
+	pid->compute(est.theta, theta_g, w);
 }

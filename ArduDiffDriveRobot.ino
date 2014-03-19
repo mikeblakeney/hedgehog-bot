@@ -10,14 +10,25 @@
 
 ADDRSupervisor addrSupervisor = ADDRSupervisor();
 
+#define ENC_HIGH_DELAY 10
+
+volatile long lastRiseTimeL = 0;
+volatile long lastRiseTimeR = 0;
+
 void incrementLeftEncoderCountInterrupt()
 {
-	addrSupervisor.incrementleftEncoderCount();
+	if(lastRiseTimeL + ENC_HIGH_DELAY < millis())
+		addrSupervisor.incrementleftEncoderCount();
+
+	lastRiseTimeL = millis();
 }
 
 void incrementRightEncoderCountInterrupt()
 {
-	addrSupervisor.incrementRightEncoderCount();
+	if(lastRiseTimeR + ENC_HIGH_DELAY < millis())
+		addrSupervisor.incrementRightEncoderCount();
+
+	lastRiseTimeR = millis();
 }
 
 void setup() {
@@ -33,7 +44,7 @@ void setup() {
 
 	Motor *leftMotor =  new Motor(L_MOTOR_PWM, L_MOTOR_DIR);
 	Motor *rightMotor = new Motor(R_MOTOR_PWM, R_MOTOR_DIR);
-	//rightMotor->setBeta( 0.90 );
+	rightMotor->setBeta( 0.90 );
 
 	rob->setMotors(leftMotor, rightMotor);
 	
@@ -52,8 +63,8 @@ void setup() {
 	
 	DiskEncoder* leftEncoder =  new DiskEncoder(L_ENCODER, 16);
 	DiskEncoder* rightEncoder = new DiskEncoder(R_ENCODER, 16);
-	PCintPort::attachInterrupt(L_ENCODER, &incrementLeftEncoderCountInterrupt, FALLING);
-	PCintPort::attachInterrupt(R_ENCODER, &incrementRightEncoderCountInterrupt, FALLING);
+	PCintPort::attachInterrupt(L_ENCODER, &incrementLeftEncoderCountInterrupt, RISING);
+	PCintPort::attachInterrupt(R_ENCODER, &incrementRightEncoderCountInterrupt, RISING);
 
 	rob->setDiskEncoders(leftEncoder, rightEncoder);
 
@@ -69,6 +80,6 @@ void loop() {
 
 	addrSupervisor.updateBehavior();
 	
-	delay(100);
+	//delay(100);
 }
 

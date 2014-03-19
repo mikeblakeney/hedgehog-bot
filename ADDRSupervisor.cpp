@@ -2,14 +2,16 @@
 
 ADDRSupervisor::ADDRSupervisor()
 {
-	this->v = 0.15;
+	this->v = 0.30;
+	
+	this->cur_w = 0;
 
 	this->estimated_state.x = 0;
 	this->estimated_state.y = 0;
 	this->estimated_state.theta = 0;
 
-	this->goal.x = 0.5;
-	this->goal.y = 0.0;
+	this->goal.x = 1.0;
+	this->goal.y = 1.0;
 	this->goal.theta = 0;
 
 
@@ -18,10 +20,10 @@ ADDRSupervisor::ADDRSupervisor()
 	this->d_at_obs = 0.10;
 	this->d_unsafe = 0.05;
 
-	prev_ticks_right = 0;
-	prev_ticks_left = 0;
+	this->prev_ticks_right = 0;
+	this->prev_ticks_left = 0;
 	
-	goToGoal = new GoToGoal();
+	this->goToGoal = new GoToGoal();
 
 }
 
@@ -31,7 +33,7 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 									 )
 {
 	this->v = v;
-	this->w = 0;
+
 
 	this->goal.x = g_x;
 	this->goal.y = g_y;
@@ -65,11 +67,11 @@ void ADDRSupervisor::updateBehavior()
 		Serial.println("GOAL!");
 
 	}else{
-		goToGoal->execute(estimated_state, goal, w);
+		goToGoal->execute(estimated_state, goal, cur_w);
 		
 		uni_velocity vel;
 		vel.v = v;
-		vel.w = w;
+		vel.w = cur_w;
 		robot->setVelocity(vel);
 
 		this->updateOdometry();
@@ -82,8 +84,10 @@ bool ADDRSupervisor::atGoal()
 {
 	float dist_to_goal = sqrt(pow(estimated_state.x - goal.x, 2) + pow(estimated_state.y - goal.y, 2));
 	
+	/*
 	Serial.print("Distance to goal: ");
 	Serial.println(dist_to_goal);
+	*/
 
 	if(dist_to_goal < d_stop )
 		return true;
@@ -103,6 +107,8 @@ void ADDRSupervisor::updateOdometry()
 {
 	int right_ticks = robot->getRightEncoderCount();
 	int left_ticks = robot->getLeftEncoderCount();
+
+	//Serial.println(right_ticks);
 
 	float R = robot->getWheelRadius();
 	float L = robot->getWheelBaseLength();
@@ -132,14 +138,13 @@ void ADDRSupervisor::updateOdometry()
 	prev_ticks_left = left_ticks;
 	prev_ticks_right = right_ticks;
 
-
+	
 	Serial.print(estimated_state.x);
-	Serial.print("\t\t");
+	Serial.print(",");
 	Serial.print(estimated_state.y);
-	Serial.print("\t\t");
+	Serial.print(",");
 	Serial.println(estimated_state.theta * 180/PI);
-
-
+	
 }
 
 

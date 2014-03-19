@@ -6,7 +6,7 @@ class PIDController
 public:
 	PIDController();
 
-	float compute(float state, float goal, float &output);
+	void compute(float state, float goal, float &output);
 	void setTunings(float Kp, float Ki, float Kd);
 	void setTiming(int time);
 
