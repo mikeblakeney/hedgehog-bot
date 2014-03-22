@@ -5,6 +5,7 @@
 #include "UltraSonicSensor.h"
 #include "DiskEncoder.h"
 #include "DifferentialDriver.h"
+#include "PIDController.h"
 #include <arduino.h>
 
 
@@ -23,10 +24,12 @@ public:
 	void setMotors(Motor* left, Motor* right);
 	void setVelocity(uni_velocity vel);
 	void setDifferentialDriver(DifferentialDriver* driver);
+	void stop();
 
 	void setDiskEncoders(DiskEncoder* left, DiskEncoder* right);
-	void updateLeftEncoderCount();
-	void updateRightEncoderCount();
+	void incrementEncoderCount(int encoder);
+	void decrementEncoderCount(int encoder);
+
 	int getLeftEncoderCount();
 	int getRightEncoderCount();
 	int getTicksPerRev();
@@ -37,7 +40,7 @@ private:
 	DifferentialDriver* driver;
 
 	DiskEncoder* encoders[2];
-
+	PIDController *leftSpeedPID;
 	
 
 	float position[2];
@@ -46,14 +49,13 @@ private:
 	float phi;
 	float omega[2];
 
-	float max_vel;
-	float min_vel;
+	float w_max;
+	float w_min;
 
 
-	float velocityToRPM(float vel);
+	float RPMToAngularVel(float vel);
 	diff_velocity velocityToPWM(diff_velocity vel);
 	diff_velocity ensure_w(uni_velocity vel);
-
 
 };
 

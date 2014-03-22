@@ -9,6 +9,7 @@ public:
 	void compute(float state, float goal, float &output);
 	void setTunings(float Kp, float Ki, float Kd);
 	void setTiming(int time);
+	void setIsAngle(bool angle);
 
 private:
 	float Kp;
@@ -18,8 +19,10 @@ private:
 	float errSum;
 	float prevErr;
 
-	int lastTime;
+	long lastTime;
 	int dt;
+
+	bool isAngle;
 
 };
 

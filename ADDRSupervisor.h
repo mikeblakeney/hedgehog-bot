@@ -16,9 +16,8 @@ public:
 	void setRobot(Robot* rob);
 	void setDifferentialDriver(DifferentialDriver* driver);
 
-	void updateLeftEncoderCount();
-	void updateRightEncoderCount();
-
+	void incrementEncoderCount(int encoder);
+	void decrementEncoderCount(int encoder);
 	
 	bool updateBehavior();
 
@@ -26,7 +25,6 @@ private:
 	
 	void updateOdometry();
 	bool atGoal();
-	void stop();
 
 
 
@@ -48,8 +46,6 @@ private:
 
 
 	GoToGoal* goToGoal;
-
-
 };
 
 #endif

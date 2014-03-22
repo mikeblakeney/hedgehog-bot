@@ -22,7 +22,8 @@ Motor::Motor(int pwm, int dir)
 
 void Motor::setSpeed(int speed)
 {
-	if(speed > 0)
+	
+	if(speed >= 0)
 	{
 		setDirection(FORWARD);
 		analogWrite(pwm_pin, beta * speed);
@@ -30,26 +31,31 @@ void Motor::setSpeed(int speed)
 	{
 		setDirection(BACKWARD);
 		analogWrite(pwm_pin, -1 * beta * speed);
+		
 	}
 	
 }
-wheel_direction Motor::getDirection()
+wheel_direction Motor::getWheelDirection()
 {
-	return direction;
+	if(digitalRead(dir_pin) == HIGH)
+		return FORWARD;
+	else
+		return BACKWARD;
+
 }
 
 void Motor::setDirection(wheel_direction dir)
 {
-	if(dir == FORWARD)
+	switch(dir)
 	{
+	case FORWARD:
 		digitalWrite(dir_pin, HIGH);
-		direction = FORWARD;
-
-	}else if(dir == BACKWARD)
-	{
+		break;
+	
+	case BACKWARD:
 		digitalWrite(dir_pin, LOW);
-		direction = BACKWARD;
-	}
+		break;
+	};
 }
 
 void Motor::setBeta(float val)

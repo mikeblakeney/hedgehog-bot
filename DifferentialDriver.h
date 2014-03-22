@@ -9,7 +9,7 @@ public:
 	DifferentialDriver(float R, float L);
 	
 	diff_velocity uniToDiff(float v, float w);
-	uni_velocity DiffToUni(float r, float l); 
+	uni_velocity diffToUni(float r, float l); 
 
 	float getWheelRadius();
 	float getWheelBaseLength();

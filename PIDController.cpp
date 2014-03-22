@@ -12,24 +12,41 @@ PIDController::PIDController()
 	errSum = 0;
 	prevErr = 0;
 
-	dt = 150;
+	dt = 200;
+
+	isAngle = true;
+
+	lastTime = millis();
 }
 
-void PIDController::compute(float state, float goal, float &output)
+void PIDController::compute(float state, float desired, float &output)
 {
 	
-	int now = millis();
+	long now = millis();
+	long current_dt = now - lastTime;
 	
-	if((now - lastTime) >= dt)
+
+
+	if( current_dt >= dt)
 	{
-		float error = goal - state;
-		error = atan2(sin(error), cos(error));
+		float error = desired - state;
+		if(isAngle)
+		{
+			error = atan2(sin(error), cos(error));
+		}
+		/*
+		Serial.print(state);
+		Serial.print(",");
+		Serial.print(desired);
+		Serial.print(",");
+		Serial.println(error);
+	*/
 
 		float e_P = error;
 
-		float e_I = errSum + error * dt;
+		float e_I = errSum + error * current_dt;
 
-		float e_D = (error - prevErr)/dt;
+		float e_D = (error - prevErr)/current_dt;
 
 		output = Kp * e_P + Ki * e_I + Kd * e_D;
 
@@ -49,4 +66,9 @@ void PIDController::setTunings(float Kp, float Ki, float Kd)
 void PIDController::setTiming(int time)
 {
 	this->dt = time;
+}
+
+void PIDController::setIsAngle(bool angle)
+{
+	this->isAngle = angle;
 }

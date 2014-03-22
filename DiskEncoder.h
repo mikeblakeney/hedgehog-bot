@@ -6,18 +6,25 @@ class DiskEncoder
 public:
 	DiskEncoder(int pin, int ticks_per_rev);
 	void initialize();
-	int getEncoderCount();
+	long getEncoderCount();
 	int getEncoderPin();
 	void incrementEncoderCount();
 	void decrementEncoderCount();
 
 	int getTicksPerRev();
+
+	float getVelocity();
+
 	
 private:
-	unsigned long encoderCount;
+	long encoderCount;
 	int encoderPin;
 
 	int ticks_per_rev;
+
+	long lastCount;
+	long lastTime;
+	float velocity;
 };
 
 #endif

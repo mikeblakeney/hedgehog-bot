@@ -1,17 +1,16 @@
 #ifndef GOTOANGLE_H
 #define GOTOANGLE_H
 #include "ADDRTypes.h"
+#include "PIDController.h"
 
 class GoToAngle
 {
 public:
 	GoToAngle();
 
-	float execute(state_t est, float theta_goal );
+	void execute(state_t est, float theta_goal, float &w );
 private:
-	float Kp;
-	float Ki;
-	float Kd;
+	PIDController* pid;
 };
 
 

@@ -17,7 +17,7 @@ public:
 	void setBeta(float val);
 	float getBeta();
 
-	wheel_direction getDirection();
+	wheel_direction getWheelDirection();
 
 private:
 	int speed;

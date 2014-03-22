@@ -8,30 +8,36 @@
 #include "Robot.h"
 #include "ADDRSupervisor.h"
 
-ADDRSupervisor addrSupervisor = ADDRSupervisor();
-
 #define ENC_HIGH_DELAY 10
 
 volatile long lastRiseTimeL = 0;
 volatile long lastRiseTimeR = 0;
 
-bool start = false;
-bool goal = false;
+bool start = true;
+bool atGoal = false;
+
+ADDRSupervisor *supervisor = new ADDRSupervisor();
 
 void updateLeftEncoderCountInterrupt()
 {
-	if(lastRiseTimeL + ENC_HIGH_DELAY < millis())
-		addrSupervisor.updateLeftEncoderCount();
-
-	lastRiseTimeL = millis();
+	//if(lastRiseTimeL + ENC_HIGH_DELAY < millis())
+	if(digitalRead(L_MOTOR_DIR) == HIGH)
+		supervisor->incrementEncoderCount(0);
+	else
+		supervisor->decrementEncoderCount(0);
+	//lastRiseTimeL = millis();
 }
 
 void updateRightEncoderCountInterrupt()
 {
-	if(lastRiseTimeR + ENC_HIGH_DELAY < millis())
-		addrSupervisor.updateRightEncoderCount();
+	//if(lastRiseTimeR + ENC_HIGH_DELAY < millis())
+	if(digitalRead(R_MOTOR_DIR) == HIGH)
+		supervisor->incrementEncoderCount(1);
+	else
+		supervisor->decrementEncoderCount(1);
 
-	lastRiseTimeR = millis();
+
+	//lastRiseTimeR = millis();
 }
 
 void setup() {
@@ -42,26 +48,23 @@ void setup() {
 		65mm diameter
 		99.25mm base length
 	*/
-	DifferentialDriver *driver = new DifferentialDriver(0.0325, 0.09925);
-	Robot* rob = new Robot(130, 30);
+	
+	Robot *robot = new Robot(130, 80);
 
 	Motor *leftMotor =  new Motor(L_MOTOR_PWM, L_MOTOR_DIR);
 	Motor *rightMotor = new Motor(R_MOTOR_PWM, R_MOTOR_DIR);
-	rightMotor->setBeta( 0.90 );
+	//rightMotor->setBeta( 0.90 );
 
-	rob->setMotors(leftMotor, rightMotor);
+	robot->setMotors(leftMotor, rightMotor);
 	
 	UltraSonicSensor A = UltraSonicSensor(SONIC_0);
 	UltraSonicSensor B = UltraSonicSensor(SONIC_1);
 	UltraSonicSensor C = UltraSonicSensor(SONIC_2);
 	UltraSonicSensor D = UltraSonicSensor(SONIC_3);
 	UltraSonicSensor E = UltraSonicSensor(SONIC_4);
-
-	Serial.println(A.distance_cm());
-
 	UltraSonicSensor sensors[] = {A, B, C, D, E};
 
-	rob->setDistanceSensors(sensors);
+	robot->setDistanceSensors(sensors);
 
 	
 	DiskEncoder* leftEncoder =  new DiskEncoder(L_ENCODER, 16);
@@ -69,31 +72,29 @@ void setup() {
 	PCintPort::attachInterrupt(L_ENCODER, &updateLeftEncoderCountInterrupt, RISING);
 	PCintPort::attachInterrupt(R_ENCODER, &updateRightEncoderCountInterrupt, RISING);
 
-	rob->setDiskEncoders(leftEncoder, rightEncoder);
+	robot->setDiskEncoders(leftEncoder, rightEncoder);
 
 	Serial.println("Starting ADDR-1");
-
-	rob->setDifferentialDriver(driver);
-	addrSupervisor.setRobot(rob);
-
+	
+	DifferentialDriver *driver = new DifferentialDriver(0.0325, 0.09925);
+	robot->setDifferentialDriver(driver);
+	
+	supervisor->setRobot(robot);
 	
 }
 
 void loop() {
 
-	while( !start ) 
+
+	if(Serial.available() > 0)
 	{
-		if(Serial.available() > 0)
-		{
-			char input = Serial.read();
-			if(input == 'g') start = true;
-		}
+		char input = Serial.read();
+		if(input == 'g') start = true;
 	}
 	
-	if(!goal)
+	if(start && !atGoal)
 	{
-		goal = addrSupervisor.updateBehavior();
+		atGoal = supervisor->updateBehavior();
 	}
-	//delay(100);
-}
 
+}

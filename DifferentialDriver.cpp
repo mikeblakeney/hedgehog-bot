@@ -5,6 +5,8 @@ DifferentialDriver::DifferentialDriver(float R, float L)
 {
 	wheel_radius = R;
 	wheel_base_length = L;
+
+
 }
 
 diff_velocity DifferentialDriver::uniToDiff(float v, float w)
@@ -20,7 +22,7 @@ diff_velocity DifferentialDriver::uniToDiff(float v, float w)
 	return vel;
 }
 
-uni_velocity DifferentialDriver::DiffToUni(float r, float l)
+uni_velocity DifferentialDriver::diffToUni(float r, float l)
 {
 	float R = wheel_radius;
 	float L = wheel_base_length;

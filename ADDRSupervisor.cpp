@@ -10,7 +10,7 @@ ADDRSupervisor::ADDRSupervisor()
 	this->estimated_state.y = 0;
 	this->estimated_state.theta = 0;
 
-	this->goal.x = -0.75;
+	this->goal.x =  0.50;
 	this->goal.y =  0.00;
 	this->goal.theta = 0.00;
 
@@ -24,6 +24,9 @@ ADDRSupervisor::ADDRSupervisor()
 	this->prev_ticks_left = 0;
 	
 	this->goToGoal = new GoToGoal();
+	
+
+	
 
 }
 
@@ -34,11 +37,9 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 {
 	this->v = v;
 
-
 	this->goal.x = g_x;
 	this->goal.y = g_y;
 	this->goal.theta = g_theta;
-
 
 	this->d_stop = d_stop;
 	
@@ -53,20 +54,16 @@ ADDRSupervisor::ADDRSupervisor(float v, float d_stop, float d_at_obs, float d_un
 	prev_ticks_left = 0;
 
 	goToGoal = new GoToGoal();
-
 }
-
-
 
 bool ADDRSupervisor::updateBehavior()
 {
 	
-	if(atGoal())
+	if( atGoal() )
 	{
-		stop();
+		robot->stop();
 		Serial.println("GOAL!");
 		return true;
-
 	}else{
 		goToGoal->execute(estimated_state, goal, cur_w);
 		
@@ -96,14 +93,6 @@ bool ADDRSupervisor::atGoal()
 		return false;
 }
 
-void ADDRSupervisor::stop()
-{
-	uni_velocity vel;
-	vel.v = 0;
-	vel.w = 0;
-	robot->setVelocity(vel);
-}
-
 void ADDRSupervisor::updateOdometry()
 {
 	long right_ticks = robot->getRightEncoderCount();
@@ -121,13 +110,9 @@ void ADDRSupervisor::updateOdometry()
 
 	float phi = (d_right - d_left) / L;
 
-	float x_dt = d_center * cos(estimated_state.theta);
-	float y_dt = d_center * sin(estimated_state.theta);
-	float theta_dt = phi;
-
-	float theta_new = estimated_state.theta + theta_dt;
-	float x_new = estimated_state.x + x_dt;
-	float y_new = estimated_state.y + y_dt;
+	float theta_new = estimated_state.theta + phi;
+	float x_new = estimated_state.x + d_center * cos(estimated_state.theta);;
+	float y_new = estimated_state.y + d_center * sin(estimated_state.theta);;
 
 	estimated_state.x = x_new;
 	estimated_state.y = y_new;
@@ -137,27 +122,42 @@ void ADDRSupervisor::updateOdometry()
 	prev_ticks_left = left_ticks;
 	prev_ticks_right = right_ticks;
 
+	/*
+	Serial.print(right_ticks);
+	Serial.print(",");
+	Serial.println(left_ticks);
+	Serial.print(",");
+
+	*/	
 	
 	Serial.print(estimated_state.x);
 	Serial.print(",");
 	Serial.print(estimated_state.y);
 	Serial.print(",");
+
 	Serial.println(estimated_state.theta * 180/PI);
-	
+
 }
 
 
 void ADDRSupervisor::setRobot(Robot *rob)
 {
+	Serial.println("Goal is at: ");
+	Serial.print(goal.x);
+	Serial.print(",");
+	Serial.println(goal.y);
+	Serial.println("-------------");
+
 	robot = rob;
 }
 
-void ADDRSupervisor::updateLeftEncoderCount()
+void ADDRSupervisor::incrementEncoderCount(int encoder)
 {
-	robot->updateLeftEncoderCount();
+	robot->incrementEncoderCount(encoder);
 }
 
-void ADDRSupervisor::updateRightEncoderCount()
+void ADDRSupervisor::decrementEncoderCount(int encoder)
 {
-	robot->updateRightEncoderCount();
+	robot->decrementEncoderCount(encoder);
 }
+

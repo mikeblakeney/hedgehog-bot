@@ -3,10 +3,10 @@
 #include "Robot.h"
 
 
-Robot::Robot(float max_rpm, float min_rpm )
+Robot::Robot(float rpm_max, float rpm_min )
 {
-	max_vel = this->velocityToRPM(max_rpm);
-	min_vel = this->velocityToRPM(min_rpm);
+	w_max = this->RPMToAngularVel(rpm_max);
+	w_min = this->RPMToAngularVel(rpm_min);
 }
 
 void Robot::setMotors(Motor* left, Motor* right)
@@ -15,7 +15,7 @@ void Robot::setMotors(Motor* left, Motor* right)
 	motors[1] = right;
 }
 
-float Robot::velocityToRPM(float vel)
+float Robot::RPMToAngularVel(float vel)
 {
 	return vel*2*PI/60;
 }
@@ -28,43 +28,53 @@ void Robot::setDifferentialDriver(DifferentialDriver* driver)
 
 diff_velocity Robot::velocityToPWM(diff_velocity vel)
 {	
-	float vel_rl_max = fmax(vel.right, vel.left);
-	float vel_rl_min = fmin(vel.right, vel.left);
-	
-	if(vel_rl_max > max_vel)
-	{
-		vel.right = vel.right - (vel_rl_max - max_vel);
-		vel.left  = vel.left - (vel_rl_max - max_vel);
-	}else if(vel_rl_min < min_vel)
-	{
-		vel.right = vel.right + (min_vel - vel_rl_min);
-		vel.left  = vel.left  + (min_vel - vel_rl_min);
-	}
 
 
-	vel.right = map(vel.right, min_vel, max_vel, 90, 255);
-	vel.left  = map(vel.left , min_vel, max_vel, 90, 255);
+
+	//vel.right = 0;
+	//vel.left = -150;
+
+	//float currentSpeed = encoders[0]->getVelocity();
+	//float leftSpeed = currentSpeed;
+
+	/*
+	Serial.print(vel.left);
+	Serial.print(",");
+	Serial.println(currentSpeed);
+	*/
+
+	//leftSpeedPID->compute(currentSpeed, vel.left, leftSpeed);
+
+	vel.right =  255 * vel.right / w_max; 
+	vel.left  = 255 * vel.left  / w_max;
+/*
+	Serial.print(vel.left);
+	Serial.print(",");
+	Serial.println(vel.right);
+
+*/
 
 	return vel;
 }
 
 void Robot::setVelocity(uni_velocity vel)
 {	
-	diff_velocity diff_vel = driver->uniToDiff(vel.v, vel.w);
-	if(abs(vel.v) > 0)
-	{
-		diff_vel = velocityToPWM(diff_vel);
-	}
-	else
-	{
-		diff_vel.right = 0;
-		diff_vel.left = 0;
-	}
+	diff_velocity diff_vel = this->ensure_w(vel);
+	diff_vel = this->velocityToPWM(diff_vel);
 
+/*
+	Serial.print(diff_vel.left);
+	Serial.print(",");
+	Serial.println(diff_vel.right);
+*/	
+	motors[0]->setSpeed(diff_vel.left);
+	motors[1]->setSpeed(diff_vel.right);
+}
 
-	
-	motors[0]->setSpeed(diff_vel.right);
-	motors[1]->setSpeed(diff_vel.left);
+void Robot::stop()
+{
+	motors[0]->setSpeed(0);
+	motors[1]->setSpeed(0);
 }
 
 void Robot::setDistanceSensors(UltraSonicSensor* sensors)
@@ -86,35 +96,14 @@ void Robot::setDiskEncoders(DiskEncoder* left, DiskEncoder* right)
 	encoders[1] = right;
 }
 
-void Robot::updateLeftEncoderCount()
+void Robot::incrementEncoderCount(int encoder)
 {
-
-	switch(motors[0]->getDirection())
-	{
-	case FORWARD:
-		encoders[0]->incrementEncoderCount();
-		break;
-	case BACKWARD:
-		encoders[0]->decrementEncoderCount();
-		break;
-	default:
-		break;
-	}
+	encoders[encoder]->incrementEncoderCount();
 }
 
-void Robot::updateRightEncoderCount()
+void Robot::decrementEncoderCount(int encoder)
 {
-	switch(motors[1]->getDirection())
-	{
-	case FORWARD:
-		encoders[1]->incrementEncoderCount();
-		break;
-	case BACKWARD:
-		encoders[1]->decrementEncoderCount();
-		break;
-	default:
-		break;
-	}
+	encoders[encoder]->decrementEncoderCount();
 }
 
 int Robot::getLeftEncoderCount()
@@ -134,59 +123,87 @@ int Robot::getTicksPerRev()
 
 float Robot::getWheelRadius()
 {
-	driver->getWheelRadius();
+	return driver->getWheelRadius();
 }
 
 float Robot::getWheelBaseLength()
 {
-	driver->getWheelBaseLength();
+	return driver->getWheelBaseLength();
 }
 
 
-diff_velocity Robot::ensure_w(uni_velocity vel)
+diff_velocity Robot::ensure_w(uni_velocity uniVel)
 {
-	diff_velocity diff_vel;
 
 	float R = driver->getWheelRadius();
 	float L = driver->getWheelBaseLength();
 
-/*
+	float v_lim = fmax(fmin(abs(uniVel.v), (R/2)*(2*w_max)), (R/2) * (2 * w_min));
+    float w_lim = fmax(fmin(abs(uniVel.w), (R/L)*(w_max - w_min)), 0);
 
-	if(abs(vel.v) > 0)
+	diff_velocity vel = driver->uniToDiff(v_lim, w_lim);
+	
+	/*
+	Serial.print(vel.left);
+	Serial.print(",");
+	Serial.println(abs(vel.right));
+	*/
+
+	float left = vel.left;
+	float right = vel.right;
+	if(abs(uniVel.v) > 0)
 	{
-		float v_lim  = fmax(fmin(abs(vel.v), R/2 * 2 * max_vel), R/2 * 2 * min_vel);
-		float w_lim  = fmax(fmin(abs(vel.w), R/L * (max_vel - min_vel)), 0);
+		float vel_rl_max = fmax(abs(vel.right), abs(vel.left));
+		float vel_rl_min = fmin(abs(vel.right), abs(vel.left));
 
-		diff_velocity vel_d = driver->uniToDiff(v_lim, w_lim);
-
-		float vel_rl_max = fmax(vel_d.right, vel_d.left);
-		float vel_rl_min = fmin(vel_d.right, vel_d.left);
-
-		if(vel_rl_max > max_vel)
+		if(vel_rl_max > w_max)
 		{
-			diff_vel.right = vel_d.right - (vel_rl_max - max_vel);
-			diff_vel.left  = vel_d.left  - (vel_rl_max - max_vel);
-		}else if(vel_rl_min < min_vel)
+			right = abs(vel.right) - (vel_rl_max - w_max);
+			left  = abs(vel.left) -  (vel_rl_max - w_max);
+		}else if(vel_rl_min < w_min)
 		{
-			diff_vel.right = vel_d.right + (vel_rl_min - min_vel);
-			diff_vel.left  = vel_d.left  + (vel_rl_min - min_vel);
-		}else
-		{
-			diff_vel.right = vel_d.right;
-			diff_vel.left  = vel_d.left;
+			right = abs(vel.right) + (w_min - vel_rl_min);
+			left  = abs(vel.left)  + (w_min - vel_rl_min);
 		}
-	}else
+	}
+	else
 	{
-		diff_vel.right = 0;
-		diff_vel.left  = 0;
+		if( abs(uniVel.w) > w_min )
+		{
+			uniVel.w = fmax( fmin( abs(uniVel.w), w_max), w_min);
+			
+			if(uniVel.w < 0)
+				uniVel.w = -1 * uniVel.w;	
+		}
+		else
+		{
+			uniVel.w = 0;
+		}
 	}
 
+/*
+	uni_velocity shift = driver->diffToUni(vel.right, vel.left);
+
+	if(uniVel.v < 0)
+		shift.v = -1 * shift.v;
+
+	if(uniVel.w < 0)
+		shift.w = -1 * shift.w;
+
+	vel = driver->uniToDiff(shift.v, shift.w);
 */
 
-	diff_velocity vel_d = driver->uniToDiff(vel.v , vel.w );
+	if( vel.right < 0 )
+		vel.right = -1 * right;
 
-
-
-
-	return diff_vel;
+	if( vel.left < 0)
+		vel.left = -1 * left;
+	
+/*
+	Serial.print("Ensure: ");
+	Serial.print(vel.left);
+	Serial.print(",");
+	Serial.println(vel.right);
+*/
+	return vel;
 }
