@@ -7,6 +7,15 @@ Robot::Robot(float rpm_max, float rpm_min )
 {
 	w_max = this->RPMToAngularVel(rpm_max);
 	w_min = this->RPMToAngularVel(rpm_min);
+
+
+	for(int i=0; i < 2; i++)
+	{
+		speedControllers[i] = new PIDController();
+		speedControllers[i]->setTunings(4.0, 0.01, 0.01);
+		speedControllers[i]->setTiming(0);
+		speedControllers[i]->setIsAngle(false);
+	}
 }
 
 void Robot::setMotors(Motor* left, Motor* right)
@@ -28,38 +37,48 @@ void Robot::setDifferentialDriver(DifferentialDriver* driver)
 
 diff_velocity Robot::velocityToPWM(diff_velocity vel)
 {	
-
-
-
-	//vel.right = 0;
-	//vel.left = -150;
-
-	//float currentSpeed = encoders[0]->getVelocity();
-	//float leftSpeed = currentSpeed;
-
 	/*
 	Serial.print(vel.left);
 	Serial.print(",");
-	Serial.println(currentSpeed);
+	Serial.println(vel.right);
 	*/
 
-	//leftSpeedPID->compute(currentSpeed, vel.left, leftSpeed);
+	float leftTarget = vel.left;
+	float rightTarget = vel.right;
 
-	vel.right =  255 * vel.right / w_max; 
-	vel.left  = 255 * vel.left  / w_max;
-/*
-	Serial.print(vel.left);
+
+	float leftSpeed  = encoders[0]->getVelocity();
+	float rightSpeed = encoders[1]->getVelocity();
+
+
+	speedControllers[0]->compute(leftSpeed,  leftTarget, leftSpeed);
+	speedControllers[1]->compute(rightSpeed, rightTarget, rightSpeed);
+	
+	
+	if(abs(leftSpeed) > 255 )	leftSpeed = 255;
+	if(abs(rightSpeed) > 255)	rightSpeed = 255;
+	
+	/*
+	Serial.print(leftSpeed);
 	Serial.print(",");
-	Serial.println(vel.right);
+	Serial.println(rightSpeed);
+	
+	
+	Serial.print(encoders[0]->getVelocity());
+	Serial.print(",");
+	Serial.println(encoders[1]->getVelocity());
+	*/
 
-*/
+	vel.left = leftSpeed;
+	vel.right = rightSpeed;
 
 	return vel;
 }
 
 void Robot::setVelocity(uni_velocity vel)
 {	
-	diff_velocity diff_vel = this->ensure_w(vel);
+	//diff_velocity diff_vel = this->ensure_w(vel);
+	diff_velocity diff_vel = driver->uniToDiff(vel.v, vel.w);
 	diff_vel = this->velocityToPWM(diff_vel);
 
 /*
@@ -143,6 +162,8 @@ diff_velocity Robot::ensure_w(uni_velocity uniVel)
 
 	diff_velocity vel = driver->uniToDiff(v_lim, w_lim);
 	
+
+
 	/*
 	Serial.print(vel.left);
 	Serial.print(",");

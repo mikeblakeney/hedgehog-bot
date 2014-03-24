@@ -40,7 +40,7 @@ private:
 	DifferentialDriver* driver;
 
 	DiskEncoder* encoders[2];
-	PIDController *leftSpeedPID;
+	PIDController *speedControllers[2];
 	
 
 	float position[2];

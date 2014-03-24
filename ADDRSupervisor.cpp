@@ -10,8 +10,8 @@ ADDRSupervisor::ADDRSupervisor()
 	this->estimated_state.y = 0;
 	this->estimated_state.theta = 0;
 
-	this->goal.x =  0.50;
-	this->goal.y =  0.00;
+	this->goal.x =  0.75;
+	this->goal.y =  0.50;
 	this->goal.theta = 0.00;
 
 
@@ -63,9 +63,9 @@ bool ADDRSupervisor::updateBehavior()
 	{
 		robot->stop();
 		Serial.println("GOAL!");
-		return true;
+		//return true;
 	}else{
-		goToGoal->execute(estimated_state, goal, cur_w);
+		//goToGoal->execute(estimated_state, goal, cur_w);
 		
 		uni_velocity vel;
 		vel.v = v;
@@ -128,7 +128,7 @@ void ADDRSupervisor::updateOdometry()
 	Serial.println(left_ticks);
 	Serial.print(",");
 
-	*/	
+	
 	
 	Serial.print(estimated_state.x);
 	Serial.print(",");
@@ -136,7 +136,7 @@ void ADDRSupervisor::updateOdometry()
 	Serial.print(",");
 
 	Serial.println(estimated_state.theta * 180/PI);
-
+*/
 }
 
 

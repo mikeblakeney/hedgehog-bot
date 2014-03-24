@@ -17,6 +17,8 @@ public:
 
 	
 private:
+	void updateVelocity();
+
 	long encoderCount;
 	int encoderPin;
 

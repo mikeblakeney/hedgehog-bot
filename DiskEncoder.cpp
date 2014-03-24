@@ -24,11 +24,13 @@ long DiskEncoder::getEncoderCount()
 void DiskEncoder::incrementEncoderCount()
 {
 	encoderCount++;
+	this->updateVelocity();
 }
 
 void DiskEncoder::decrementEncoderCount()
 {
 	encoderCount--;
+	this->updateVelocity();
 }
 
 int DiskEncoder::getEncoderPin()
@@ -41,32 +43,32 @@ int DiskEncoder::getTicksPerRev()
 	return ticks_per_rev;
 }
 
-float DiskEncoder::getVelocity()
+void DiskEncoder::updateVelocity()
 {
 	long now = millis();
 	long timeChange = (now - lastTime);
 	long count = encoderCount - lastCount;
 	
-	
+	/*
 	Serial.print(encoderCount);
 	Serial.print(",");
 	Serial.println(lastCount);
-	
-	if(timeChange > 1000)
+	*/
+	if(timeChange > 50)
 	{
+		velocity = (float)count/timeChange * 1000 * (2 * PI) / ticks_per_rev;
+		
 		/*
-		Serial.print(count);
+		Serial.print(velocity);
 		Serial.print(",");
 		Serial.println(timeChange / 1000.0);
 		*/
-
-		timeChange = timeChange / 1000.0;
-		velocity = (float)count/timeChange;
-		
 		lastTime = now;
 		lastCount = encoderCount;
 	}
+}
 
-
+float DiskEncoder::getVelocity()
+{
 	return velocity;
 }

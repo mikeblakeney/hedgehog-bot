@@ -30,6 +30,7 @@ void PIDController::compute(float state, float desired, float &output)
 	if( current_dt >= dt)
 	{
 		float error = desired - state;
+		
 		if(isAngle)
 		{
 			error = atan2(sin(error), cos(error));

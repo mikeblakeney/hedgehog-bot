@@ -20,24 +20,29 @@ ADDRSupervisor *supervisor = new ADDRSupervisor();
 
 void updateLeftEncoderCountInterrupt()
 {
-	//if(lastRiseTimeL + ENC_HIGH_DELAY < millis())
-	if(digitalRead(L_MOTOR_DIR) == HIGH)
-		supervisor->incrementEncoderCount(0);
-	else
-		supervisor->decrementEncoderCount(0);
-	//lastRiseTimeL = millis();
+	if(lastRiseTimeL + ENC_HIGH_DELAY < millis())
+	{
+		if(digitalRead(L_MOTOR_DIR) == HIGH)
+			supervisor->incrementEncoderCount(0);
+		else
+			supervisor->decrementEncoderCount(0);
+		lastRiseTimeL = millis();
+	}
 }
 
 void updateRightEncoderCountInterrupt()
 {
-	//if(lastRiseTimeR + ENC_HIGH_DELAY < millis())
-	if(digitalRead(R_MOTOR_DIR) == HIGH)
-		supervisor->incrementEncoderCount(1);
-	else
-		supervisor->decrementEncoderCount(1);
+	if(lastRiseTimeR + ENC_HIGH_DELAY < millis())
+	{
+
+		if(digitalRead(R_MOTOR_DIR) == HIGH)
+			supervisor->incrementEncoderCount(1);
+		else
+			supervisor->decrementEncoderCount(1);
 
 
-	//lastRiseTimeR = millis();
+		lastRiseTimeR = millis();
+	}
 }
 
 void setup() {
@@ -49,7 +54,7 @@ void setup() {
 		99.25mm base length
 	*/
 	
-	Robot *robot = new Robot(130, 80);
+	Robot *robot = new Robot(130, 60);
 
 	Motor *leftMotor =  new Motor(L_MOTOR_PWM, L_MOTOR_DIR);
 	Motor *rightMotor = new Motor(R_MOTOR_PWM, R_MOTOR_DIR);
