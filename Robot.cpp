@@ -55,8 +55,12 @@ diff_velocity Robot::velocityToPWM(diff_velocity vel)
 	speedControllers[1]->compute(rightSpeed, rightTarget, rightSpeed);
 	
 	
-	if(abs(leftSpeed) > 255 )	leftSpeed = 255;
-	if(abs(rightSpeed) > 255)	rightSpeed = 255;
+	if(leftSpeed  > 255 )	leftSpeed = 255;
+	if(rightSpeed > 255)	rightSpeed = 255;
+	if(leftSpeed  < -255)	leftSpeed = 255;
+	if(rightSpeed < -255) 	rightSpeed = 255;
+
+	
 	
 	/*
 	Serial.print(leftSpeed);
@@ -77,8 +81,9 @@ diff_velocity Robot::velocityToPWM(diff_velocity vel)
 
 void Robot::setVelocity(uni_velocity vel)
 {	
-	//diff_velocity diff_vel = this->ensure_w(vel);
-	diff_velocity diff_vel = driver->uniToDiff(vel.v, vel.w);
+
+
+	diff_velocity diff_vel = this->ensure_w(vel);
 	diff_vel = this->velocityToPWM(diff_vel);
 
 /*
@@ -153,7 +158,7 @@ float Robot::getWheelBaseLength()
 
 diff_velocity Robot::ensure_w(uni_velocity uniVel)
 {
-
+/*
 	float R = driver->getWheelRadius();
 	float L = driver->getWheelBaseLength();
 
@@ -161,13 +166,13 @@ diff_velocity Robot::ensure_w(uni_velocity uniVel)
     float w_lim = fmax(fmin(abs(uniVel.w), (R/L)*(w_max - w_min)), 0);
 
 	diff_velocity vel = driver->uniToDiff(v_lim, w_lim);
-	
+*/	
 
-
+	diff_velocity vel = driver->uniToDiff(uniVel.v, uniVel.w);
 	/*
 	Serial.print(vel.left);
 	Serial.print(",");
-	Serial.println(abs(vel.right));
+	Serial.println(vel.right);
 	*/
 
 	float left = vel.left;

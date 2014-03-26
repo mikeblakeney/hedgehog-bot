@@ -4,8 +4,8 @@
 GoToGoal::GoToGoal()
 {
 	pid = new PIDController();
-	pid->setTiming(20);
-	pid->setTunings(4.0, 0.01, 0.01);
+	pid->setTiming(100);
+	pid->setTunings(50.0, 0.01, 0.01);
 }
 
 void GoToGoal::execute(state_t est, state_t goal, float &w)
