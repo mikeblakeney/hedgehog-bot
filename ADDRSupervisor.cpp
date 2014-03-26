@@ -10,8 +10,8 @@ ADDRSupervisor::ADDRSupervisor()
 	this->estimated_state.y = 0;
 	this->estimated_state.theta = 0;
 
-	this->goal.x =  -0.70;
-	this->goal.y =  -0.80;
+	this->goal.x = 0.70;
+	this->goal.y = 0.80;
 	this->goal.theta = 0.00;
 
 
