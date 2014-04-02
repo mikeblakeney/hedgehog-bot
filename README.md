@@ -1,4 +1,4 @@
-ArduDiffDriveRobot
+Hedgehog-Bot
 ==================
 
-Arduino powered differential drive robot.  ADDR (Adder) for short.  
+An arduino controlled differential drive robot. 
